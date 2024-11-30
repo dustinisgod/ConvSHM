@@ -36,7 +36,7 @@ function canni.canniRoutine()
                 mq.delay(500)
             end
 
-            if mq.TLO.Me.SpellReady(canniSpellName)() then
+            if mq.TLO.Me.SpellReady(canniSpellName)() and not mq.TLO.Me.Moving() then
                 debugPrint("DEBUG: Casting Canni spell.")
                 mq.cmdf('/cast %d', canniSpellSlot)
                 mq.delay(100) -- Small delay for casting to start

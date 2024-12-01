@@ -308,11 +308,11 @@ local function commandHandler(command, ...)
     elseif command == "cripple" then
         setCripple(args[1])
     elseif command == "maloignore" then
-        setMaloIgnore(args[1])
+        setMaloIgnore(args[1], args[2])
     elseif command == "slowignore" then
-        setSlowIgnore(args[1])
+        setSlowIgnore(args[1], args[2])
     elseif command == "crippleignore" then
-        setCrippleIgnore(args[1])
+        setCrippleIgnore(args[1], args[2])
     elseif command == "canni" then
         setCanni(args[1])
     elseif command == "torpor" then

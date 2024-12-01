@@ -194,11 +194,11 @@ function buffer.buffRoutine()
         for _, spellType in ipairs(spellTypes) do
 
             local bestSpell = spells.findBestSpell(spellType, charLevel)
-            local bestspellstring = tostring(bestSpell)
+            debugPrint("DEBUG: Best spell for spell type: ", spellType, " is ", bestSpell)
 
-            if bestspellstring and isClassEligibleForBuff(spellType, classShortName) then
+            if bestSpell and isClassEligibleForBuff(spellType, classShortName) then
                 -- Check if the best spell is Unity of the Shissar
-                if charLevel == 60 and bestspellstring == "Unity of the Shissar" then
+                if charLevel == 60 and bestSpell == "Unity of the Shissar" then
                     debugPrint("DEBUG: Unity of the Shissar detected for member ID:", memberID)
                 
                     -- Define all buffs associated with Unity
@@ -228,18 +228,18 @@ function buffer.buffRoutine()
                     -- If any buffs are missing, queue Unity of the Shissar
                     if #missingBuffs > 0 then
                         debugPrint("DEBUG: Missing Unity buffs for member ID: ", memberID, " Buffs: ", table.concat(missingBuffs, ", "))
-                        table.insert(buffer.buffQueue, {memberID = memberID, spell = bestspellstring, spellType = "Unity"})
+                        table.insert(buffer.buffQueue, {memberID = memberID, spell = bestSpell, spellType = "Unity"})
                         queuedBuffs[memberID]["Unity"] = true -- Mark Unity as queued
                     else
                         debugPrint("DEBUG: All Unity buffs are present for member ID: ", memberID, ". Skipping Unity.")
                     end
                 else
                     -- Normal buffing logic for other levels or when Unity is unavailable
-                    if mq.TLO.Spell(bestspellstring).StacksTarget() then
-                        if not mq.TLO.Target.Buff(bestspellstring)() then
+                    if mq.TLO.Spell(bestSpell).StacksTarget() then
+                        if not mq.TLO.Target.Buff(bestSpell)() then
                             if not queuedBuffs[memberID][spellType] then
                                 debugPrint("DEBUG: Adding member ID ", memberID, " to buffQueue for spell type:", spellType)
-                                table.insert(buffer.buffQueue, {memberID = memberID, spell = bestspellstring, spellType = spellType})
+                                table.insert(buffer.buffQueue, {memberID = memberID, spell = bestSpell, spellType = spellType})
                                 queuedBuffs[memberID][spellType] = true -- Mark buff as queued
                             else
                                 debugPrint("DEBUG: Buff ", spellType, " already queued for member ID ", memberID, ". Skipping.")

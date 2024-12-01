@@ -62,7 +62,7 @@ local function setDefaultConfig()
     gui.canniMinHPPercent = 30
     gui.regenHealOnly = false
     gui.torporOn = false
-    gui.torporpct = 60
+    gui.torporpct = 80
     gui.emergencyheal = false
     gui.emergencyhealpct = 30
     gui.mainHeal = false

@@ -46,12 +46,16 @@ local function currentlyActive(spell)
     local buffCount = mq.TLO.Target.BuffCount() or 0
     for i = 1, buffCount do
         if mq.TLO.Target.Buff(i).Name() == spellName then
+            debugPrint("DEBUG: Spell is active on the target.")
             if mq.TLO.Target.Buff(spellName).Caster() == charName then
+                debugPrint("DEBUG: Spell is active on the target and was cast by the character.")
                 return true -- Spell is active on the target
             else
+                debugPrint("DEBUG: Spell is active on the target but was not cast by the character.")
                 return false
             end
         else
+            debugPrint("DEBUG: Spell is not active on the target.")
             return false
         end
     end
@@ -112,11 +116,11 @@ local function handleDot(guiSetting, spellType, minLevel, gemSlot)
 
         while mq.TLO.Me.Casting() do
             debugPrint("DEBUG: Casting dot spell:", spellName)
-            if spellType == "PoisonDot" and mq.TLO.Target() and mq.TLO.Target.PctHPs() < gui.PoisonDotStopPct and not mq.TLO.Target.Named() then
+            if spellType == "PoisonDot" and mq.TLO.Target() and mq.TLO.Target.PctHPs() < gui.PoisonDotStopPct and not mq.TLO.Target.Named() and not mq.TLO.Target.Dead() then
                 debugPrint("DEBUG: Stopping cast: target HP above 95%")
                 mq.cmd('/stopcast')
                 break
-            elseif spellType == "DiseaseDot" and mq.TLO.Target() and mq.TLO.Target.PctHPs() < gui.DiseaseDotStopPct and not mq.TLO.Target.Named() then
+            elseif spellType == "DiseaseDot" and mq.TLO.Target() and mq.TLO.Target.PctHPs() < gui.DiseaseDotStopPct and not mq.TLO.Target.Named() and not mq.TLO.Target.Dead() then
                 debugPrint("DEBUG: Stopping cast: target HP above 95%")
                 mq.cmd('/stopcast')
                 break

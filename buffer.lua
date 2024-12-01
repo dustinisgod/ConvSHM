@@ -142,13 +142,14 @@ function buffer.buffRoutine()
     local groupMembers = {}
 
     if gui.buffGroup then
-        for i = 1, mq.TLO.Group.Members() do
+        for i = 0, mq.TLO.Group.Members() - 1 do -- Start from 0 to include the player
             local member = mq.TLO.Group.Member(i)
             local memberID = member and member.ID()
 
-            -- Only add the member if they are valid, alive, and not the player
+            -- Check for valid group members (including self as group member 0)
             if memberID and memberID > 0 and not member.Dead() then
                 table.insert(groupMembers, memberID)
+                debugPrint("DEBUG: Added group member with ID:", memberID)
             else
                 debugPrint("DEBUG: Skipping invalid or dead group member with ID:", memberID or "nil")
             end
@@ -180,7 +181,7 @@ function buffer.buffRoutine()
 
         debugPrint("DEBUG: Targeting member ID:", memberID)
         mq.cmdf("/tar id %d", memberID)
-        mq.delay(400)
+        mq.delay(300)
 
         if not mq.TLO.Target() or mq.TLO.Target.ID() ~= memberID then
             debugPrint("DEBUG: Targeting failed for member ID:", memberID)
@@ -191,10 +192,13 @@ function buffer.buffRoutine()
         queuedBuffs[memberID] = queuedBuffs[memberID] or {}
 
         for _, spellType in ipairs(spellTypes) do
+
             local bestSpell = spells.findBestSpell(spellType, charLevel)
-            if bestSpell and isClassEligibleForBuff(spellType, classShortName) then
+            local bestspellstring = tostring(bestSpell)
+
+            if bestspellstring and isClassEligibleForBuff(spellType, classShortName) then
                 -- Check if the best spell is Unity of the Shissar
-                if charLevel == 60 and bestSpell == "Unity of the Shissar" then
+                if charLevel == 60 and bestspellstring == "Unity of the Shissar" then
                     debugPrint("DEBUG: Unity of the Shissar detected for member ID:", memberID)
                 
                     -- Define all buffs associated with Unity
@@ -223,28 +227,28 @@ function buffer.buffRoutine()
                 
                     -- If any buffs are missing, queue Unity of the Shissar
                     if #missingBuffs > 0 then
-                        debugPrint("DEBUG: Missing Unity buffs for member ID:", memberID, " Buffs:", table.concat(missingBuffs, ", "))
-                        table.insert(buffer.buffQueue, {memberID = memberID, spell = bestSpell, spellType = "Unity"})
+                        debugPrint("DEBUG: Missing Unity buffs for member ID: ", memberID, " Buffs: ", table.concat(missingBuffs, ", "))
+                        table.insert(buffer.buffQueue, {memberID = memberID, spell = bestspellstring, spellType = "Unity"})
                         queuedBuffs[memberID]["Unity"] = true -- Mark Unity as queued
                     else
-                        debugPrint("DEBUG: All Unity buffs are present for member ID:", memberID, ". Skipping Unity.")
+                        debugPrint("DEBUG: All Unity buffs are present for member ID: ", memberID, ". Skipping Unity.")
                     end
                 else
                     -- Normal buffing logic for other levels or when Unity is unavailable
-                    if mq.TLO.Spell('"' .. bestSpell .. '"').Stacks() then
-                        if not mq.TLO.Target.Buff(bestSpell)() then
+                    if mq.TLO.Spell(bestspellstring).StacksTarget() then
+                        if not mq.TLO.Target.Buff(bestspellstring)() then
                             if not queuedBuffs[memberID][spellType] then
                                 debugPrint("DEBUG: Adding member ID ", memberID, " to buffQueue for spell type:", spellType)
-                                table.insert(buffer.buffQueue, {memberID = memberID, spell = bestSpell, spellType = spellType})
+                                table.insert(buffer.buffQueue, {memberID = memberID, spell = bestspellstring, spellType = spellType})
                                 queuedBuffs[memberID][spellType] = true -- Mark buff as queued
                             else
-                                debugPrint("DEBUG: Buff", spellType, "already queued for member ID", memberID, ". Skipping.")
+                                debugPrint("DEBUG: Buff ", spellType, " already queued for member ID ", memberID, ". Skipping.")
                             end
                         else
-                            debugPrint("DEBUG: Buff", spellType, "already active for member ID", memberID, ". Skipping.")
+                            debugPrint("DEBUG: Buff ", spellType, " already active for member ID ", memberID, ". Skipping.")
                         end
                     else
-                        debugPrint("DEBUG: Buff", spellType, "does not stack for member ID", memberID, ". Skipping.")
+                        debugPrint("DEBUG: Buff ", spellType, " does not stack for member ID ", memberID, ". Skipping.")
                     end
                 end
             end
@@ -252,6 +256,9 @@ function buffer.buffRoutine()
 
         mq.delay(100) -- Delay between each member to reduce targeting interruptions
     end
+
+    -- Shuffle the buffQueue order to avoid targeting issues
+    shuffleTable(buffer.buffQueue)
 
     -- Only run processBuffQueue if there are entries in buffer.buffQueue
     if gui.botOn and gui.buffsOn then

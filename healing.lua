@@ -96,15 +96,29 @@ local function processSelfHealing()
 
     if gui.emergencyheal and mq.TLO.Me.PctHPs() <= gui.emergencyhealpct then
         debugPrint("Emergency heal triggered for self")
-        if preCastChecks() and mq.TLO.Me.SpellReady(mainHealSpell)() and 
-           isTargetInRange(mq.TLO.Me.ID(), mainHealSpell) and hasEnoughMana(mainHealSpell) then
+        if preCastChecks() and mq.TLO.Me.SpellReady(mainHealSpell)() and isTargetInRange(mq.TLO.Me.ID(), mainHealSpell) and hasEnoughMana(mainHealSpell) then
             castSpell(mq.TLO.Me.ID(), mq.TLO.Me.Name(), mainHealSpell)
+        elseif not mq.TLO.Me.SpellReady(mainHealSpell)() and hasEnoughMana(mainHealSpell) then
+            while not mq.TLO.Me.SpellReady(mainHealSpell)() do
+                mq.delay(50)
+            end
+            if mq.TLO.Me.SpellReady(mainHealSpell)() then
+                castSpell(mq.TLO.Me.ID(), mq.TLO.Me.Name(), mainHealSpell)
+            end
         end
     elseif gui.torporOn and charLevel >= 59 and mq.TLO.Me.PctHPs() <= gui.torporpct and not isTorporActive() then
         debugPrint("Torpor triggered for self")
         if mq.TLO.Me.SpellReady(torporSpell)() and hasEnoughMana(torporSpell) then
             debugPrint("Casting Torpor on self - 2")
             castSpell(mq.TLO.Me.ID(), mq.TLO.Me.Name(), torporSpell)
+        elseif not mq.TLO.Me.SpellReady(torporSpell)() and hasEnoughMana(torporSpell) then
+            while not mq.TLO.Me.SpellReady(torporSpell)() do
+                mq.delay(50)
+            end
+            if mq.TLO.Me.SpellReady(torporSpell)() then
+                debugPrint("Casting Torpor on self - 3")
+                castSpell(mq.TLO.Me.ID(), mq.TLO.Me.Name(), torporSpell)
+            end
         end
     else
         debugPrint("Torpor not needed or already active or off")
@@ -116,6 +130,9 @@ end
 local function processHealsForTarget(targetID, targetName, targetHP, targetClass, isExtendedTarget, extIndex)
     local isPlayer = targetID == mq.TLO.Me.ID()
     local mainHealThreshold = (isExtendedTarget and gui["ExtTargetMainHeal" .. extIndex .. "Pct"]) or gui.mainHealPct
+
+    targetHP = targetHP or 0
+    mainHealThreshold = mainHealThreshold or 100
 
     if isPlayer then
         debugPrint("Processing self-healing logic")

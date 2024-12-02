@@ -83,9 +83,46 @@ end
 
 -- Function to handle the heal routine and return
 local function handleHealRoutineAndReturn()
-    healing.healRoutine()
-    canni.canniRoutine()
+    local assist = require('assist')
+    local malo = require('malo')
+    local slow = require('slow')
+    local cripple = require('cripple')
+
     utils.monitorNav()
+
+    if gui.canniOn then
+        debugPrint("Canni routine.")
+        canni.canniRoutine()
+    end
+
+    if gui.mainHeal or gui.torporOn then
+        debugPrint("Healing routine.")
+        healing.healRoutine()
+    end
+
+    if gui.maloOn then
+        debugPrint("Malo routine.")
+        malo.maloRoutine()
+    end
+
+    if gui.slowOn then
+        debugPrint("Slow routine.")
+        slow.slowRoutine()
+    end
+
+    if gui.crippleOn then
+        debugPrint("Cripple routine.")
+        cripple.crippleRoutine()
+    end
+
+    if gui.assistOn then
+        debugPrint("Assist routine.")
+        assist.assistRoutine()
+        if gui.petOn then
+            debugPrint("Pet utils routine.")
+            utils.monitorPet()
+        end
+    end
     return true
 end
 

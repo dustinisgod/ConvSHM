@@ -26,6 +26,10 @@ if class ~= "Shaman" then
     mq.exit()
 end
 
+if mq.TLO.Me.Pet() ~= "NO PET" then
+    mq.cmd("/pet hold")
+end
+
 local currentLevel = mq.TLO.Me.Level()
 
 utils.PluginCheck()
@@ -58,7 +62,7 @@ end
 local toggleboton = false
 local function returnChaseToggle()
     -- Check if bot is on and return-to-camp is enabled, and only set camp if toggleboton is false
-    if gui.botOn and gui.returnToCamp and not toggleboton then
+    if gui.botOn and gui.returntocamp and not toggleboton then
         nav.setCamp()
         toggleboton = true
     elseif not gui.botOn and toggleboton then

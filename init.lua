@@ -27,7 +27,7 @@ if class ~= "Shaman" then
 end
 
 if mq.TLO.Me.Pet() ~= "NO PET" then
-    mq.cmd("/pet hold")
+    mq.cmd("/pet hold on")
 end
 
 local currentLevel = mq.TLO.Me.Level()

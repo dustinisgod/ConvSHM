@@ -189,11 +189,11 @@ function assist.assistRoutine()
             end
         end
 
-        if mq.TLO.Target() and mq.TLO.Target.PctHPs() <= gui.assistPercent and mq.TLO.Target.Distance() <= gui.assistRange and not mq.TLO.Target.Mezzed() and gui.petOn and mq.TLO.Me.Pet() ~= 'NO PET' then
+        if mq.TLO.Target() and mq.TLO.Target.PctHPs() <= gui.assistPercent and mq.TLO.Target.Distance() <= gui.assistRange and not mq.TLO.Target.Mezzed() and gui.petOn and mq.TLO.Pet.IsSummoned() then
             debugPrint("DEBUG: Target is below assist percent and within assist range. - pet")
             mq.cmd("/squelch /pet attack")
             debugPrint("DEBUG: Pet attack is on.")
-        elseif mq.TLO.Target() and gui.petOn and mq.TLO.Me.Pet() ~= 'NO PET' and mq.TLO.Me.Pet.Combat() and (mq.TLO.Target.Mezzed() or mq.TLO.Target.PctHPs() > gui.assistPercent or mq.TLO.Pet.Distance() > gui.assistRange) then
+        elseif mq.TLO.Target() and gui.petOn and mq.TLO.Pet.IsSummoned() and mq.TLO.Me.Pet.Combat() and (mq.TLO.Target.Mezzed() or mq.TLO.Target.PctHPs() > gui.assistPercent or mq.TLO.Pet.Distance() > gui.assistRange) then
             debugPrint("DEBUG: Target is mezzed, above assist percent, or out of assist range.")
             mq.cmd("/squelch /pet back off")
         end

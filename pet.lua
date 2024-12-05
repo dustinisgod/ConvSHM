@@ -16,7 +16,7 @@ local charLevel = mq.TLO.Me.Level()
 function pet.petRoutine()
     debugPrint("DEBUG: Checking if pet usage is enabled.")
 
-    if gui.botOn and gui.assistOn and gui.petOn and mq.TLO.Me.Pet() == "NO PET" and charLevel >= 32 then
+    if gui.botOn and gui.assistOn and gui.petOn and mq.TLO.Pet.IsSummoned() and charLevel >= 32 then
             debugPrint("DEBUG: Checking if pet is enabled.")
         local petSpellSlot = 6
         local petSpellName = spells.findBestSpell("SummonPet", charLevel)
@@ -46,12 +46,14 @@ function pet.petRoutine()
                 end
                 mq.delay(100)
             end
-            if mq.TLO.Me.Pet() ~= "NO PET" then
-                mq.cmd("/pet hold on")
+
+            ---@diagnostic disable-next-line: undefined-field
+            if mq.TLO.Pet.IsSummoned() and not mq.TLO.Pet.GHold() then
+                mq.cmd("/pet ghold on")
             end
         end
 
-    elseif mq.TLO.Me.Pet() ~= "NO PET" then
+    elseif mq.TLO.Pet.IsSummoned() then
         debugPrint("DEBUG: Pet already summoned.")
         return
     else

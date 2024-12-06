@@ -16,7 +16,7 @@ local charLevel = mq.TLO.Me.Level()
 function pet.petRoutine()
     debugPrint("DEBUG: Checking if pet usage is enabled.")
 
-    if gui.botOn and gui.assistOn and gui.petOn and mq.TLO.Pet.IsSummoned() and charLevel >= 32 then
+    if gui.botOn and gui.assistOn and gui.petOn and not mq.TLO.Pet.IsSummoned() and charLevel >= 32 then
             debugPrint("DEBUG: Checking if pet is enabled.")
         local petSpellSlot = 6
         local petSpellName = spells.findBestSpell("SummonPet", charLevel)

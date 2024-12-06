@@ -266,7 +266,7 @@ function spells.loadDefaultSpells(charLevel)
         print("Slot " .. slot .. ": DiseaseDot")
         slot = slot + 1
     end
-    if charLevel >= 2 then
+    if charLevel >= 1 then
         defaultSpells[slot] = spells.findBestSpell("SoWBuff", charLevel)
         print("Slot " .. slot .. ": SoWBuff")
         slot = slot + 1
